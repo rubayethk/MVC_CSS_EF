@@ -152,8 +152,27 @@ namespace MVC_CSS_EF.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", product.CategoryID);
-            return View(product);
+
+            ProductViewModel viewModel = new ProductViewModel();
+            viewModel.CategoryList = new SelectList(db.Categories, "ID", "Name", product.CategoryID);
+            viewModel.ImageLists = new List<SelectList>();
+
+            foreach(var imageMapping in product.ProductImageMappings.OrderBy(pim=> pim.ImageNumber))
+            {
+                viewModel.ImageLists.Add(new SelectList(db.ProductImages, "ID", "FileName", imageMapping.ProductImageID));
+            }
+
+            for (int i = viewModel.ImageLists.Count; i < Constants.NumberOfProductImages; i++)
+            {
+                viewModel.ImageLists.Add(new SelectList(db.ProductImages, "ID", "FileName"));
+            }
+
+            viewModel.ID = product.ID;
+            viewModel.Name = product.Name;
+            viewModel.Description = product.Description;
+            viewModel.Price = product.Price;
+
+            return View(viewModel);
         }
 
         // POST: Products/Edit/5
@@ -161,16 +180,76 @@ namespace MVC_CSS_EF.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Name,Description,Price,CategoryID")] Product product)
+        public ActionResult Edit(ProductViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            var productToUpdate = db.Products.Include(p => p.ProductImageMappings).Where(p => p.ID == viewModel.ID).Single();
+            
+            if (TryUpdateModel(productToUpdate,"", new string[] { "Name", "Description", "Price", "CategoryID"}))
             {
-                db.Entry(product).State = EntityState.Modified;
+                if (productToUpdate.ProductImageMappings == null) 
+                { 
+                    productToUpdate.ProductImageMappings = new List<ProductImageMapping>(); 
+                }                  
+                //get a list of selected images without any blanks                 
+                string[] productImages = viewModel.ProductImages.Where(pi => !string.IsNullOrEmpty(pi)).ToArray();
+                for (int i = 0; i < productImages.Length; i++)   
+                {
+                    //get the image currently stored              
+                    var imageMappingToEdit = productToUpdate.ProductImageMappings.Where(pim => pim.ImageNumber == i).FirstOrDefault();
+                    //find the new image              
+                    var image = db.ProductImages.Find(int.Parse(productImages[i]));
+                    //if there is nothing stored then we need to add a new mapping                
+                    if (imageMappingToEdit == null)
+                    {
+                        //add image to the imagemappings              
+                        productToUpdate.ProductImageMappings.Add(new ProductImageMapping
+                        {
+                            ImageNumber = i,
+                            ProductImage = image,
+                            ProductImageID = image.ID
+                        });
+                    }
+                    //else it's not a new file so edit the current mapping                
+                    else
+                    {
+                        //if they are not the same              
+                        if (imageMappingToEdit.ProductImageID != int.Parse(productImages[i]))
+                        {
+                            //assign image property of the image mapping              
+                            imageMappingToEdit.ProductImage = image;
+                        }
+                    }
+                }
+                for (int i = productImages.Length; i < Constants.NumberOfProductImages; i++)
+                {
+                    var imageMappingToEdit = productToUpdate.ProductImageMappings.Where(pim =>
+                        pim.ImageNumber == i).FirstOrDefault();
+                    //if there is something stored in the mapping              
+                    if (imageMappingToEdit != null)
+                    {
+                        //delete the record from the mapping table directly.              
+                        //just calling productToUpdate.ProductImageMappings.Remove(imageMappingToEdit)  
+                        //results in a FK error              
+                        db.ProductImageMappings.Remove(imageMappingToEdit);
+                    }
+                }
+
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", product.CategoryID);
-            return View(product);
+
+            return View(viewModel);
+
+
+
+            //if (ModelState.IsValid)
+            //{
+            //    db.Entry(viewModel).State = EntityState.Modified;
+            //    db.SaveChanges();
+            //    return RedirectToAction("Index");
+            //}
+
+            return View(viewModel);
         }
 
         // GET: Products/Delete/5
