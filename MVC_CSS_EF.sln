@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVC_CSS_EF", "MVC_CSS_EF.csproj", "{A20DDE43-8AD0-4B89-B5A3-D19FC8B2251A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVC_CSS_EF.Tests", "..\MVC_CSS_EF.Tests\MVC_CSS_EF.Tests.csproj", "{877CE0F2-5B9F-4958-9F74-7774BC20D851}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A20DDE43-8AD0-4B89-B5A3-D19FC8B2251A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A20DDE43-8AD0-4B89-B5A3-D19FC8B2251A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A20DDE43-8AD0-4B89-B5A3-D19FC8B2251A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A20DDE43-8AD0-4B89-B5A3-D19FC8B2251A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{877CE0F2-5B9F-4958-9F74-7774BC20D851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{877CE0F2-5B9F-4958-9F74-7774BC20D851}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{877CE0F2-5B9F-4958-9F74-7774BC20D851}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{877CE0F2-5B9F-4958-9F74-7774BC20D851}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D48E9B9-D323-4585-83CA-EC30F329F91F}
+	EndGlobalSection
+EndGlobal
